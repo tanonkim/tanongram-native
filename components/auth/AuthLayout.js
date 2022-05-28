@@ -1,34 +1,47 @@
 import React from "react";
-import { TouchableWithoutFeedback, Keyboard } from "react-native";
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+} from "react-native";
 import styled from "styled-components/native";
 
 const Container = styled.View`
   flex: 1;
-  background-color: black;
   align-items: center;
   justify-content: center;
-  padding: 0px 40px;
+  background-color: black;
+  padding: 0px 20px;
 `;
 
 const Logo = styled.Image`
-  max-width: 80%;
+  max-width: 100%;
   width: 100%;
-  height: 20%;
-  margin-bottom: -10px;
+  height: 35%;
+  margin: 30% auto auto auto;
 `;
 
 export default function AuthLayout({ children }) {
-  const dissmissKeyboard = () => {
+  const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
   return (
-    <TouchableWithoutFeedback style={{ flex: 1 }} onPress={dissmissKeyboard}>
+    <TouchableWithoutFeedback style={{ flex: 1 }} onPress={dismissKeyboard}>
       <Container>
-        <Logo
-          resizeMode="contain"
-          source={require("../../assets/insta-loading.png")}
-        />
-        {children}
+        <KeyboardAvoidingView
+          style={{
+            width: "100%",
+          }}
+          behavior="position"
+          keyboardVerticalOffset={Platform.OS === "ios" ? 50 : 0}
+        >
+          <Logo
+            resizeMode="contain"
+            source={require("../../assets/insta-loading.png")}
+          />
+          {children}
+        </KeyboardAvoidingView>
       </Container>
     </TouchableWithoutFeedback>
   );
