@@ -20,11 +20,11 @@ export default function Welcome() {
   };
 
   useEffect(() => {
-    register("firstName");
-    register("lastName");
-    register("username");
-    register("email");
-    register("password");
+    register("firstName", { required: true });
+    register("lastName", { required: true });
+    register("username", { required: true });
+    register("email", { required: true });
+    register("password", { required: true });
   }, [register]);
 
   return (
@@ -32,6 +32,7 @@ export default function Welcome() {
       <TextInput
         placeholder="First Name"
         returnKeyType="next"
+        autoCapitalize="none"
         onSubmitEditing={() => onNext(lastNameRef)}
         placeholderTextColor={"rgba(255, 255, 255, 0.6)"}
         onChangeText={(text) => setValue("firstName", text)}
@@ -40,6 +41,7 @@ export default function Welcome() {
         ref={lastNameRef}
         placeholder="Last Name"
         returnKeyType="next"
+        autoCapitalize="none"
         onSubmitEditing={() => onNext(usernameRef)}
         placeholderTextColor={"rgba(255, 255, 255, 0.6)"}
         onChangeText={(text) => setValue("lastName", text)}
@@ -48,6 +50,7 @@ export default function Welcome() {
         ref={usernameRef}
         placeholder="Username"
         returnKeyType="next"
+        autoCapitalize="none"
         onSubmitEditing={() => onNext(emailRef)}
         placeholderTextColor={"rgba(255, 255, 255, 0.6)"}
         onChangeText={(text) => setValue("username", text)}
@@ -57,6 +60,7 @@ export default function Welcome() {
         placeholder="Email"
         keyboardType="email-address"
         returnKeyType="next"
+        autoCapitalize="none"
         onSubmitEditing={() => onNext(passwordRef)}
         placeholderTextColor={"rgba(255, 255, 255, 0.6)"}
         onChangeText={(text) => setValue("email", text)}
@@ -67,13 +71,14 @@ export default function Welcome() {
         secureTextEntry
         returnKeyType="done"
         lastOne={true}
+        autoCapitalize="none"
         placeholderTextColor={"rgba(255, 255, 255, 0.6)"}
         onChangeText={(text) => setValue("password", text)}
-        onPress={handleSubmit(onValid)}
+        onSubmitEditing={handleSubmit(onValid)}
       />
       <AuthButton
         text="Create Account"
-        disabled={true}
+        loading
         onPress={handleSubmit(onValid)}
       />
     </AuthLayout>
