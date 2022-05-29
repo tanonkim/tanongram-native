@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
 import React from "react";
 
-export default function Feed() {
+export default function Profile() {
   return (
     <View
       style={{
@@ -11,7 +11,7 @@ export default function Feed() {
         justifyContent: "center",
       }}
     >
-      <Text style={{ color: "white" }}>Feed</Text>
+      <Text style={{ color: "white" }}>Profile</Text>
     </View>
   );
 }
