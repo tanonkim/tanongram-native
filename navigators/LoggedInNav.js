@@ -25,7 +25,7 @@ export default function LoggedInNav() {
         component={Feed}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
-            <TabIcon iconName={"home"} color={color} size={focused ? 24 : 20} />
+            <TabIcon iconName={"home"} color={color} focused={focused} />
           ),
         }}
       />
@@ -34,37 +34,25 @@ export default function LoggedInNav() {
         component={Search}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
-            <TabIcon
-              iconName={"search"}
-              color={color}
-              size={focused ? 24 : 20}
-            />
+            <TabIcon iconName={"search"} color={color} focused={focused} />
           ),
         }}
       />
       <Tabs.Screen
         name="Camera"
-        component={Search}
+        component={View}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
-            <TabIcon
-              iconName={"camera"}
-              color={color}
-              size={focused ? 24 : 20}
-            />
+            <TabIcon iconName={"camera"} color={color} focused={focused} />
           ),
         }}
       />
       <Tabs.Screen
         name="Notifications"
-        component={View}
+        component={Notifications}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
-            <TabIcon
-              iconName={"heart"}
-              color={color}
-              size={focused ? 24 : 20}
-            />
+            <TabIcon iconName={"heart"} color={color} focused={focused} />
           ),
         }}
       />
@@ -73,11 +61,7 @@ export default function LoggedInNav() {
         component={Profile}
         options={{
           tabBarIcon: ({ focused, color, size }) => (
-            <TabIcon
-              iconName={"person"}
-              color={color}
-              size={focused ? 24 : 20}
-            />
+            <TabIcon iconName={"person"} color={color} focused={focused} />
           ),
         }}
       />
