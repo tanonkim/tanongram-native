@@ -1,10 +1,10 @@
-import { Text, View } from "react-native";
-import React from "react";
 import { gql, useQuery } from "@apollo/client";
-import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from "../fragments";
-import { FlatList } from "react-native";
-import ScreenLayout from "../components/ScreenLayout";
+import React from "react";
+import { useState } from "react";
+import { FlatList, Text, View } from "react-native";
 import Photo from "../components/Photo";
+import ScreenLayout from "../components/ScreenLayout";
+import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from "../fragments";
 
 const FEED_QUERY = gql`
   query seeFeed {
@@ -26,14 +26,22 @@ const FEED_QUERY = gql`
   ${COMMENT_FRAGMENT}
 `;
 
-export default function Feed({ navigation }) {
-  const { data, loading } = useQuery(FEED_QUERY);
+export default function Feed() {
+  const { data, loading, refetch } = useQuery(FEED_QUERY);
   const renderPhoto = ({ item: photo }) => {
-    return <Photo {...photo}></Photo>;
+    return <Photo {...photo} />;
   };
+  const refresh = async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  };
+  const [refreshing, setRefreshing] = useState(false);
   return (
     <ScreenLayout loading={loading}>
       <FlatList
+        refreshing={refreshing}
+        onRefresh={refresh}
         style={{ width: "100%" }}
         showsVerticalScrollIndicator={false}
         data={data?.seeFeed}
