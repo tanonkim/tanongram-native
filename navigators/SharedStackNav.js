@@ -1,17 +1,19 @@
 import React from "react";
-import Photo from "../../screens/Photo";
-import Profile from "../../screens/Profile";
-import Feed from "../../screens/Feed";
-import Search from "../../screens/Search";
-import Notifications from "../../screens/Notifications";
-import Me from "../../screens/Me";
+import Photo from "../screens/Photo";
+import Profile from "../screens/Profile";
+import Feed from "../screens/Feed";
+import Search from "../screens/Search";
+import Notifications from "../screens/Notifications";
+import Me from "../screens/Me";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Image } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
 export default function StackNavFactory({ screenName }) {
   return (
     <Stack.Navigator
+      headerMode="screen"
       screenOptions={{
         headerBackTitleVisible: false,
         headerTintColor: "white",
@@ -22,7 +24,23 @@ export default function StackNavFactory({ screenName }) {
       }}
     >
       {screenName === "Feed" ? (
-        <Stack.Screen name={"Feed"} component={Feed} />
+        <Stack.Screen
+          name={"Feed"}
+          component={Feed}
+          options={{
+            headerTitle: () => (
+              <Image
+                style={{
+                  width: 120,
+                  height: 100,
+                  marginTop: -25,
+                }}
+                resizeMode="contain"
+                source={require("../assets/insta-loading.png")}
+              />
+            ),
+          }}
+        />
       ) : null}
       {screenName === "Search" ? (
         <Stack.Screen name={"Search"} component={Search} />
