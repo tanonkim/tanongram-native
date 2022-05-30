@@ -3,11 +3,21 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useForm } from "react-hook-form";
 import DismissKeyboard from "../components/DismissKeyboard";
+import { gql } from "@apollo/client";
+const SEARCH_PHOTOS = gql`
+  query searchPhotos($keyword: String!) {
+    searchPhotos(keyword: $keyword) {
+      id
+      file
+    }
+  }
+`;
 
 const Input = styled.TextInput``;
 
 export default function Search({ navigation }) {
   const { setValue, register } = useForm();
+  const [startQueryFn, { loading, data }] = useLazyQuery(SEARCH_PHOTOS);
   const SearchBox = () => (
     <TextInput
       style={{ backgroundColor: "white" }}
