@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from "react-native";
+import { colors } from "../color";
 
 const Container = styled.View`
   flex: 1;
@@ -31,8 +32,14 @@ const IconContainer = styled.View`
   bottom: 5px;
   right: 0px;
 `;
+const HeaderRightText = styled.Text`
+  color: ${colors.blue};
+  font-size: 16px;
+  font-weight: 600;
+  margin-right: 7px;
+`;
 
-export default function SelectPhoto() {
+export default function SelectPhoto({ navigation }) {
   const [ok, setOk] = useState(false);
   const [photos, setPhotos] = useState([]);
   const [chosenPhoto, setChosenPhoto] = useState("");
@@ -54,8 +61,18 @@ export default function SelectPhoto() {
       getPhotos();
     }
   };
+  const headerRight = () => (
+    <TouchableOpacity>
+      <HeaderRightText>Next</HeaderRightText>
+    </TouchableOpacity>
+  );
   useEffect(() => {
     getPermissions();
+  }, []);
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: headerRight,
+    });
   }, []);
   const numColumns = 4;
   const { width } = useWindowDimensions();
@@ -69,7 +86,11 @@ export default function SelectPhoto() {
         style={{ width: width / numColumns, height: 100 }}
       />
       <IconContainer>
-        <Ionicons name="checkmark-circle" size={18} color="white" />
+        <Ionicons
+          name="checkmark-circle"
+          size={18}
+          color={photo.uri === chosenPhoto ? colors.blue : "white"}
+        />
       </IconContainer>
     </ImageContainer>
   );
