@@ -42,15 +42,14 @@ export default function SelectPhoto() {
     setChosenPhoto(photos[0]?.uri);
   };
   const getPermissions = async () => {
-    const { accessPrivileges, canAskAgain } =
-      await MediaLibrary.getPermissionsAsync();
-    if (accessPrivileges === "none" && canAskAgain) {
-      const { accessPrivileges } = await MediaLibrary.requestPermissionsAsync();
-      if (accessPrivileges !== "none") {
+    const { status, canAskAgain } = await MediaLibrary.getPermissionsAsync();
+    if (status === "undetermined" && canAskAgain) {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== "undetermined") {
         setOk(true);
         getPhotos();
       }
-    } else if (accessPrivileges !== "none") {
+    } else if (status !== "undetermined") {
       setOk(true);
       getPhotos();
     }
