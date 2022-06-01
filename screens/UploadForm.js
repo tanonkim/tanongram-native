@@ -42,8 +42,27 @@ const HeaderRightText = styled.Text`
 `;
 
 export default function UploadForm({ route, navigation }) {
-  const [uploadPhotoMutation, { loading, error }] = useMutation(
-    UPLOAD_PHOTO_MUTATION
+  const updateUploadPhoto = (cache, result) => {
+    const {
+      data: { uploadPhoto },
+    } = result;
+    if (uploadPhoto.id) {
+      cache.modify({
+        id: "ROOT_QUERY",
+        fields: {
+          seeFeed(prev) {
+            return [uploadPhoto, ...prev];
+          },
+        },
+      });
+      navigation.navigate("Tabs");
+    }
+  };
+  const [uploadPhotoMutation, { loading }] = useMutation(
+    UPLOAD_PHOTO_MUTATION,
+    {
+      update: updateUploadPhoto,
+    }
   );
   const HeaderRight = () => (
     <TouchableOpacity onPress={handleSubmit(onValid)}>
@@ -65,8 +84,8 @@ export default function UploadForm({ route, navigation }) {
   }, [loading]);
   const onValid = ({ caption }) => {
     const file = new ReactNativeFile({
-      uri: route.params.file,
-      name: `1.jpg`,
+      uri: route.params.photoLocal,
+      name: "a.jpg",
       type: "image/jpeg",
     });
     uploadPhotoMutation({
@@ -79,7 +98,7 @@ export default function UploadForm({ route, navigation }) {
   return (
     <DismissKeyboard>
       <Container>
-        <Photo resizeMode="contain" source={{ uri: route.params.file }} />
+        <Photo resizeMode="contain" source={{ uri: route.params.photoLocal }} />
         <CaptionContainer>
           <Caption
             returnKeyType="done"
