@@ -1,6 +1,6 @@
 import { Camera } from "expo-camera";
 import React, { useEffect, useState, useRef } from "react";
-import { Image, StatusBar, Text, TouchableOpacity } from "react-native";
+import { Alert, Image, StatusBar, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import styled from "styled-components";
 import Slider from "@react-native-community/slider";
@@ -44,10 +44,12 @@ const CloseButton = styled.TouchableOpacity`
   top: 20px;
   left: 20px;
 `;
-
+const PhotoActions = styled(Actions)`
+  flex-direction: row;
+`;
 const PhotoAction = styled.TouchableOpacity`
   background-color: white;
-  padding: 5px 10px;
+  padding: 10px 30px;
   border-radius: 4px;
 `;
 const PhotoActionText = styled.Text`
@@ -88,6 +90,24 @@ export default function TakePhoto({ navigation }) {
       setFlashMode(Camera.Constants.FlashMode.off);
     }
   };
+  const goToUpload = async (save) => {
+    if (save) {
+      await MediaLibrary.saveToLibraryAsync(takenPhoto);
+    }
+    console.log("Will upload", takenPhoto);
+  };
+  const onUpload = () => {
+    Alert.alert("Save Photo?", "Save & upload or just upload", [
+      {
+        text: "Save & Upload",
+        onPress: () => goToUpload(true),
+      },
+      {
+        text: "Just Upload",
+        onPress: () => goToUpload(false),
+      },
+    ]);
+  };
   const onCameraReady = () => setCameraReady(true);
   const takePhoto = async () => {
     if (camera.current && cameraReady) {
@@ -96,7 +116,6 @@ export default function TakePhoto({ navigation }) {
         exif: true,
       });
       setTakenPhoto(uri);
-      //const assets = await MediaLibrary.createAssetAsync(uri);
     }
   };
   const onDismiss = () => setTakenPhoto("");
@@ -125,6 +144,7 @@ export default function TakePhoto({ navigation }) {
           <SliderContainer>
             <Slider
               style={{ width: 200, height: 20 }}
+              value={zoom}
               minimumValue={0}
               maximumValue={1}
               minimumTrackTintColor="#FFFFFF"
@@ -168,17 +188,14 @@ export default function TakePhoto({ navigation }) {
           </ButtonsContainer>
         </Actions>
       ) : (
-        <Actions>
+        <PhotoActions>
           <PhotoAction onPress={onDismiss}>
             <PhotoActionText>Dismiss</PhotoActionText>
           </PhotoAction>
-          <PhotoAction>
+          <PhotoAction onPress={onUpload}>
             <PhotoActionText>Upload</PhotoActionText>
           </PhotoAction>
-          <PhotoAction>
-            <PhotoActionText>Save & Upload</PhotoActionText>
-          </PhotoAction>
-        </Actions>
+        </PhotoActions>
       )}
     </Container>
   );
