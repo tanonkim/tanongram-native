@@ -8,9 +8,7 @@ const Stack = createNativeStackNavigator();
 
 export default function LoggedInNav() {
   return (
-    <Stack.Navigator
-      screenOptions={{ headerShown: false, presentation: "modal" }}
-    >
+    <Stack.Navigator mode="modal">
       <Stack.Screen
         name="Tabs"
         options={{ headerShown: false }}
