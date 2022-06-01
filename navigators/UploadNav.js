@@ -8,7 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 const Tab = createMaterialTopTabNavigator();
 const Stack = createNativeStackNavigator();
 
-export default function UploadNav() {
+export default function UploadNav({ navigation }) {
   return (
     <Tab.Navigator
       tabBarPosition="bottom"
@@ -26,8 +26,13 @@ export default function UploadNav() {
             screenOptions={{
               headerTintColor: "white",
               headerBackTitleVisible: false,
-              headerBackImage: ({ tintColor }) => (
-                <Ionicons color={tintColor} name="close" size={28} />
+              headerLeft: ({ tintColor }) => (
+                <Ionicons
+                  color={tintColor}
+                  name="close"
+                  size={28}
+                  onPress={() => navigation.navigate("Tabs")}
+                />
               ),
               headerStyle: {
                 backgroundColor: "black",
