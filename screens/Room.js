@@ -20,19 +20,33 @@ const ROOM_QUERY = gql`
   }
 `;
 
-const MessageContainer = styled.View``;
+const MessageContainer = styled.View`
+  padding: 0px 10px;
+  flex-direction: ${(props) => (props.outGoing ? "row-reverse" : "row")};
+  align-items: flex-end;
+  margin-bottom: 10px;
+`;
 const Author = styled.View``;
-const Avatar = styled.Image``;
-const Username = styled.Text`
-  color: white;
+const Avatar = styled.Image`
+  height: 20px;
+  width: 20px;
+  border-radius: 25px;
 `;
 const Message = styled.Text`
   color: white;
+  background-color: rgba(255, 255, 255, 0.3);
+  padding: 5px 10px;
+  overflow: hidden;
+  border-radius: 10px;
+  font-size: 16px;
+  margin: 0px 10px;
 `;
 const TextInput = styled.TextInput`
   margin-bottom: 50px;
+  margin-top: 25px;
+  color: white;
   width: 95%;
-  background-color: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
   padding: 10px 20px;
   border-radius: 1000px;
 `;
@@ -49,10 +63,11 @@ export default function Room({ route, navigation }) {
     });
   }, []);
   const renderItem = ({ item: message }) => (
-    <MessageContainer>
+    <MessageContainer
+      outGoing={message.user.username !== route?.params?.talkingTo?.username}
+    >
       <Author>
         <Avatar source={{ uri: message.user.avatar }}></Avatar>
-        <Username>{message.user.username}</Username>
       </Author>
       <Message>{message.payload}</Message>
     </MessageContainer>
@@ -60,7 +75,7 @@ export default function Room({ route, navigation }) {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior="height"
+      behavior="padding"
       keyboardVerticalOffset={100}
     >
       <ScreenLayout loading={loading}>
@@ -72,9 +87,10 @@ export default function Room({ route, navigation }) {
           renderItem={renderItem}
         />
         <TextInput
+          placeholderTextColor="1px solid rgba(255, 255, 255, 0.5)"
           placeholder="Write a message..."
           returnkeyLabel="Send Message"
-          returnkeyType="send"
+          returnKeyType="send"
         />
       </ScreenLayout>
     </KeyboardAvoidingView>
