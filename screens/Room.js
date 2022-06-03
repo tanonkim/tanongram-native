@@ -20,6 +20,7 @@ const ROOM_UPDATES = gql`
     }
   }
 `;
+
 const SEND_MESSAGE_MUTATION = gql`
   mutation sendMessage($payload: String!, $roomId: Int, $userId: Int) {
     sendMessage(payload: $payload, roomId: $roomId, userId: $userId) {
@@ -28,9 +29,11 @@ const SEND_MESSAGE_MUTATION = gql`
     }
   }
 `;
+
 const ROOM_QUERY = gql`
   query seeRoom($id: Int!) {
     seeRoom(id: $id) {
+      id
       messages {
         id
         payload
@@ -65,15 +68,14 @@ const Message = styled.Text`
   margin: 0px 10px;
 `;
 const TextInput = styled.TextInput`
-  margin-bottom: 25px;
-  margin-top: 25px;
-  margin-right: 5px;
-  color: white;
-  width: 95%;
   border: 1px solid rgba(255, 255, 255, 0.5);
   padding: 10px 20px;
+  color: white;
   border-radius: 1000px;
+  width: 90%;
+  margin-right: 10px;
 `;
+
 const InputContainer = styled.View`
   width: 95%;
   margin-bottom: 50px;
@@ -81,7 +83,9 @@ const InputContainer = styled.View`
   flex-direction: row;
   align-items: center;
 `;
+
 const SendButton = styled.TouchableOpacity``;
+
 export default function Room({ route, navigation }) {
   const { data: meData } = useMe();
   const { register, setValue, handleSubmit, getValues, watch } = useForm();
@@ -147,7 +151,7 @@ export default function Room({ route, navigation }) {
       },
     } = options;
     if (message.id) {
-      const messageFragment = client.cache.writeFragment({
+      const incomingMessage = client.cache.writeFragment({
         fragment: gql`
           fragment NewMessage on Message {
             id
@@ -165,15 +169,20 @@ export default function Room({ route, navigation }) {
         id: `Room:${route.params.id}`,
         fields: {
           messages(prev) {
-            return [...prev, messageFragment];
+            const existingMessage = prev.find(
+              (aMessage) => aMessage.__ref === incomingMessage.__ref
+            );
+            if (existingMessage) {
+              return prev;
+            }
+            return [...prev, incomingMessage];
           },
         },
       });
     }
   };
-  const [subscribed, setSubscribed] = useState(false);
   useEffect(() => {
-    if (data?.seeRoom && !subscribed) {
+    if (data?.seeRoom) {
       subscribeToMore({
         document: ROOM_UPDATES,
         variables: {
@@ -181,9 +190,8 @@ export default function Room({ route, navigation }) {
         },
         updateQuery,
       });
-      setSubscribed(true);
     }
-  }, [data, subscribed]);
+  }, [data]);
   const onValid = ({ message }) => {
     if (!sendingMessage) {
       sendMessageMutation({
@@ -218,12 +226,12 @@ export default function Room({ route, navigation }) {
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: "black" }}
       behavior="padding"
-      keyboardVerticalOffset={100}
+      keyboardVerticalOffset={50}
     >
       <ScreenLayout loading={loading}>
         <FlatList
-          inverted
           style={{ width: "100%", marginVertical: 10 }}
+          inverted
           ItemSeparatorComponent={() => <View style={{ height: 20 }}></View>}
           data={messages}
           showsVerticalScrollIndicator={false}
@@ -232,12 +240,12 @@ export default function Room({ route, navigation }) {
         />
         <InputContainer>
           <TextInput
-            placeholderTextColor="1px solid rgba(255, 255, 255, 0.5)"
+            placeholderTextColor="rgba(255, 255, 255, 0.5)"
             placeholder="Write a message..."
-            returnkeyLabel="Send Message"
+            returnKeyLabel="Send Message"
             returnKeyType="send"
             onChangeText={(text) => setValue("message", text)}
-            onsubmitEditing={handleSubmit(onValid)}
+            onSubmitEditing={handleSubmit(onValid)}
             value={watch("message")}
           />
           <SendButton
