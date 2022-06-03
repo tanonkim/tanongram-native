@@ -1,5 +1,5 @@
-import { gql, useMutation, useQuery } from "@apollo/client";
-import React, { useEffect } from "react";
+import { gql, useApolloClient, useMutation, useQuery } from "@apollo/client";
+import React, { useEffect, useState } from "react";
 import { FlatList, Text, View, KeyboardAvoidingView } from "react-native";
 import ScreenLayout from "../components/ScreenLayout";
 import styled from "styled-components/native";
@@ -82,7 +82,6 @@ const InputContainer = styled.View`
   align-items: center;
 `;
 const SendButton = styled.TouchableOpacity``;
-
 export default function Room({ route, navigation }) {
   const { data: meData } = useMe();
   const { register, setValue, handleSubmit, getValues, watch } = useForm();
@@ -140,17 +139,51 @@ export default function Room({ route, navigation }) {
       id: route?.params?.id,
     },
   });
+  const client = useApolloClient();
+  const updateQuery = (prevQuery, options) => {
+    const {
+      subscriptionData: {
+        data: { roomUpdates: message },
+      },
+    } = options;
+    if (message.id) {
+      const messageFragment = client.cache.writeFragment({
+        fragment: gql`
+          fragment NewMessage on Message {
+            id
+            payload
+            user {
+              username
+              avatar
+            }
+            read
+          }
+        `,
+        data: message,
+      });
+      client.cache.modify({
+        id: `Room:${route.params.id}`,
+        fields: {
+          messages(prev) {
+            return [...prev, messageFragment];
+          },
+        },
+      });
+    }
+  };
+  const [subscribed, setSubscribed] = useState(false);
   useEffect(() => {
-    if (data?.seeRoom) {
+    if (data?.seeRoom && !subscribed) {
       subscribeToMore({
         document: ROOM_UPDATES,
         variables: {
           id: route?.params?.id,
         },
+        updateQuery,
       });
+      setSubscribed(true);
     }
-  }, [data]);
-
+  }, [data, subscribed]);
   const onValid = ({ message }) => {
     if (!sendingMessage) {
       sendMessageMutation({
@@ -169,13 +202,12 @@ export default function Room({ route, navigation }) {
       title: `${route?.params?.talkingTo?.username}`,
     });
   }, []);
-
   const renderItem = ({ item: message }) => (
     <MessageContainer
       outGoing={message.user.username !== route?.params?.talkingTo?.username}
     >
       <Author>
-        <Avatar source={{ uri: message.user.avatar }}></Avatar>
+        <Avatar source={{ uri: message.user.avatar }} />
       </Author>
       <Message>{message.payload}</Message>
     </MessageContainer>
